@@ -33,7 +33,7 @@ public class DataController {
 
 
 
-    @RequestMapping("/table/{table}")
+    @RequestMapping("/csv/{table}")
     public ModelAndView listJobs(
             @PathVariable String table,
             WebRequest request,

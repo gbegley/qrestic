@@ -51,6 +51,15 @@ public class DataController {
         return new ModelAndView(v);
     }
 
+    public ModelAndView renderSqlMetaDataAsCsv(String name, String sql, HttpServletResponse response) throws IOException {
+
+        ExportConfig exportConfig = new ExportConfig(name,sql);
+        log.debug("CSV gen is using SQL:\n{}", exportConfig.getSql());
+        CsvView v = new CsvView(new CSVExporter(dataSource,exportConfig));
+        v.setType(CsvView.Type.TSV);
+        return new ModelAndView(v);
+    }
+
 
     Logger log = LoggerFactory.getLogger(getClass());
 }
