@@ -7,12 +7,26 @@ import java.util.Formatter;
  */
 public class Selection implements SqlFragment {
 
-    private SqlFragment fields;
+    private SelectList fields;
+    private Criteria criteria;
+
     private SqlFragment object;
-    private SqlFragment criteria;
     private SqlFragment aggregates;
     private SqlFragment ordering;
     private SqlFragment grouping;
+
+    public Selection clone(){
+        Selection selection = new Selection(object.get());
+        if(fields!=null && fields.size()>0) selection.fields = fields;
+        if(criteria!=null && criteria.size()>0) {
+            selection.criteria = new Criteria();
+            selection.criteria.add(criteria.get());
+        }
+        if(aggregates!=null) selection.aggregates = aggregates;
+        if(ordering!=null) selection.ordering = ordering;
+        if(grouping!=null) selection.grouping = grouping;
+        return selection;
+    }
 
     public Selection(String object) {
         this.object = new SimpleFragment(object);
@@ -63,28 +77,21 @@ public class Selection implements SqlFragment {
         return sb.toString();
     }
 
-    public SqlFragment getCriteria() {
-        return criteria;
-    }
 
-    public void setCriteria(SqlFragment criteria) {
-        this.criteria = criteria;
-    }
-
-    public SqlFragment getFields() {
+    public SelectList getFields() {
         return fields;
     }
 
-    public void setFields(SqlFragment fields) {
+    public void setFields(SelectList fields) {
         this.fields = fields;
     }
 
-    public void setFields(String fields) {
-        this.fields = new SimpleFragment(fields);
+    public Criteria getCriteria() {
+        return criteria;
     }
 
-    public SqlFragment getObject() {
-        return object;
+    public void setCriteria(Criteria criteria) {
+        this.criteria = criteria;
     }
 
     public void setObject(SqlFragment object) {
@@ -93,10 +100,6 @@ public class Selection implements SqlFragment {
 
     public void setObject(String object) {
         this.object = new SimpleFragment(object);
-    }
-
-    public void setCriteria(String criteria1) {
-        this.criteria = new SimpleFragment(criteria1);
     }
 
     public SqlFragment getAggregates() {
@@ -133,7 +136,8 @@ public class Selection implements SqlFragment {
     }
 
     public Selection withFields(SqlFragment sql) {
-        setFields(sql);
+        if(fields==null) fields = new SelectList();
+        fields.add(sql);
         return this;
     }
 
@@ -148,7 +152,7 @@ public class Selection implements SqlFragment {
     }
 
     public Selection withOrdering(SimpleFragment simpleFragment) {
-        setAggregates(simpleFragment);
+        ordering = simpleFragment;//todo make this additive
         return this;
     }
 
@@ -168,7 +172,8 @@ public class Selection implements SqlFragment {
     }
 
     public Selection withCriteria(SqlFragment criteria) {
-        setCriteria(criteria);
+        if(this.criteria==null) this.criteria = new Criteria();
+        this.criteria.add(criteria);
         return this;
     }
 }

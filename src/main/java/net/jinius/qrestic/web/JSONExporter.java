@@ -69,7 +69,7 @@ public class JSONExporter {
             pw.append(",\n");
             nv(pw,"sql",sql);
             pw.append(",\n");
-            pw.append("\"rows\":[");
+
             try {
                 jt.query(sql,new RowCallbackHandler() {
                     boolean renderedHeaders = false;
@@ -80,9 +80,10 @@ public class JSONExporter {
                         ResultSetMetaData md =  rs.getMetaData();
                         int cols = md.getColumnCount();
                         try {
-//                            if(!renderedHeaders) {
-//                                renderHeaders(rs);
-//                            }
+                            if(!renderedHeaders) {
+                                renderHeaders(rs);
+                                pw.append("\"\n ,rows\":[");
+                            }
                             renderRow(rs);
                             rowIndex++;
                             if(rowIndex%flushInterval==0) {
@@ -113,7 +114,7 @@ public class JSONExporter {
                         }
 
                         pw.append("\n\t");
-                        pw.append(QUOTE).append("fields").append(QUOTE).append(COLON);
+                        pw.append(QUOTE).append("metadata").append(QUOTE).append(COLON);
                         pw.append("[");
                         for(String s : exportConfig.columnHeaderMap.values()) {
                             pw.append("\n\t\t");
@@ -133,9 +134,10 @@ public class JSONExporter {
                         pw.append("\n\t");
                         pw.append(rowIndex>0 ? ",": " ");
                         pw.append("{");
-                        for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
-                            String col = rs.getMetaData().getColumnName(i);
-                            String formattedField = formatField(rs, i);
+                        int i=0;
+                        for(String col : exportConfig.getColumnHeaderMap().keySet()){
+                            Integer index = exportConfig.getColumnIndexMap().get(col);
+                            String formattedField = index!=null? formatField(rs, index) : null;
                             if(i>1)pw.append(',');
                             nv(pw,col,formattedField);
                         }

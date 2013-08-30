@@ -40,9 +40,8 @@ public class DataController {
             HttpServletResponse response
     ) throws IOException {
         WebRequestCriteriaResolver resolver = new WebRequestCriteriaResolver(new JdbcTemplate(dataSource));
-        resolver.setObject(table);
-        Criteria criteria = resolver.resolve(request);
-        Selection selection = new Selection(table).withCriteria(criteria);
+        Selection selection = new Selection(table);
+        resolver.resolve(request,selection,null);
         String sql = selection.get();
         return renderSqlAsCsv(table,sql,response);
     }
