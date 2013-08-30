@@ -43,6 +43,7 @@
             <a href="#barpilots" data-role="button" data-theme="c" data-icon="bars" data-inline="true">Bar Pilots Dock Wind</a>
 
         </div><!-- /content wrapper for padding -->
+        
     </div><!-- /defaultpanel -->
 </div>
 
